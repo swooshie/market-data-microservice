@@ -11,5 +11,5 @@ class MarketDataProvider(ABC):
     @abstractmethod
     async def bulk_poll(
         self, symbols: list[str], interval: int
-    ) -> str:  # returns job-id
+    ) -> str: 
         """kick off polling job and hand back opaque id"""
