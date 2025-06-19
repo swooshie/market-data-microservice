@@ -109,7 +109,7 @@
 							"    const req = {",
 							"        symbols: [\"AAPL\", \"MSFT\"],",
 							"        interval: 60,",
-							"        provider: \"alpha_vantage\"",
+							"        provider: \"finnhub\"",
 							"    };",
 							"    const res = pm.response.json().config;",
 							"",
@@ -128,7 +128,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n  \"symbols\": [\"AAPL\", \"MSFT\"],\n  \"interval\": 60,\n  \"provider\": \"alpha_vantage\"\n}",
+					"raw": "{\n  \"symbols\": [\"AAPL\", \"MSFT\"],\n  \"interval\": 60,\n  \"provider\": \"finnhub\"\n}",
 					"options": {
 						"raw": {
 							"language": "json"
