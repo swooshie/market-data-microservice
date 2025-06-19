@@ -1,0 +1,172 @@
+{
+	"info": {
+		"_postman_id": "a2d32c2c-d859-47e9-872d-68906915dc55",
+		"name": "Market Data MicroService",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "40243067"
+	},
+	"item": [
+		{
+			"name": "get",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Response status code is 200\", function () {",
+							"    pm.expect(pm.response.code).to.equal(200);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response time is less than 1000ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(1000);",
+							"});",
+							"",
+							"",
+							"pm.test(\"Response has required fields\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData).to.have.all.keys('symbol', 'price', 'timestamp', 'provider');",
+							"});",
+							"",
+							"",
+							"pm.test(\"Price is a non-negative number\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.price).to.be.a('number').and.to.be.at.least(0, \"Price should be a non-negative number\");",
+							"});",
+							"",
+							"",
+							"pm.test(\"Timestamp is in a valid date format\", function () {",
+							"    const responseData = pm.response.json();",
+							"    ",
+							"    pm.expect(responseData).to.be.an('object');",
+							"    pm.expect(responseData.timestamp).to.exist;",
+							"    pm.expect(new Date(responseData.timestamp).getTime()).to.not.be.NaN;",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/prices/latest?symbol=AAPL",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"prices",
+						"latest"
+					],
+					"query": [
+						{
+							"key": "symbol",
+							"value": "AAPL"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "post",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 202\", function () {",
+							"    pm.expect(pm.response.code).to.be.oneOf([202]);",
+							"});",
+							"pm.test(\"Content-Type is present\", function () {",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"});",
+							"pm.test(\"Response contains job_id\", function () {",
+							"    const json = pm.response.json();",
+							"    pm.expect(json).to.have.property(\"job_id\");",
+							"    pm.expect(json.job_id).to.include(\"poll_\");",
+							"});",
+							"",
+							"pm.test(\"Response config matches request\", function () {",
+							"    const req = {",
+							"        symbols: [\"AAPL\", \"MSFT\"],",
+							"        interval: 60,",
+							"        provider: \"alpha_vantage\"",
+							"    };",
+							"    const res = pm.response.json().config;",
+							"",
+							"    pm.expect(res.symbols).to.eql(req.symbols);",
+							"    pm.expect(res.interval).to.eql(req.interval);",
+							"    pm.expect(res.provider).to.eql(req.provider);",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"symbols\": [\"AAPL\", \"MSFT\"],\n  \"interval\": 60,\n  \"provider\": \"alpha_vantage\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{base_url}}/prices/poll"
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000",
+			"type": "string"
+		}
+	]
+}
