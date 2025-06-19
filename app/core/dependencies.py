@@ -5,10 +5,16 @@ from ..services.provider import MarketDataProvider
 from .config import settings
 
 
+# def get_provider() -> MarketDataProvider:
+#     if settings.provider == "alpha_vantage":
+#         return AlphaVantageProvider(api_key=settings.alpha_vantage_api_key)
+#     raise HTTPException(
+#         status_code=status.HTTP_501_NOT_IMPLEMENTED,
+#         detail=f"provider '{settings.provider}' not supported yet",
+#     )
+
+from ..services.finnhub_provider import FinnhubProvider
+from ..services.provider import MarketDataProvider
+
 def get_provider() -> MarketDataProvider:
-    if settings.provider == "alpha_vantage":
-        return AlphaVantageProvider(api_key=settings.alpha_vantage_api_key)
-    raise HTTPException(
-        status_code=status.HTTP_501_NOT_IMPLEMENTED,
-        detail=f"provider '{settings.provider}' not supported yet",
-    )
+    return FinnhubProvider()   # now uses live Finnhub data

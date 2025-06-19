@@ -22,7 +22,7 @@ async def get_latest_price(
     market: MarketDataProvider = Depends(get_provider),
     session: AsyncSession = Depends(get_session),
 ):
-    price, ts = await market.get_latest_price(symbol)
+    price, ts, quote = await market.get_latest_price(symbol)
 
     raw = RawMarketData(
         id=str(uuid.uuid4()),
@@ -30,7 +30,7 @@ async def get_latest_price(
         price=price,
         timestamp=ts,
         provider=provider or market.__class__.__name__,
-        raw_response={"dummy": True},  # will be actual API response later
+        raw_response=quote,  # will be actual API response later
     )
     session.add(raw)
     await session.commit()
