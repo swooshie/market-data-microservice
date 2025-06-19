@@ -1,5 +1,6 @@
 import logging
 import os
+import json
 
 from confluent_kafka import Producer
 
@@ -25,14 +26,13 @@ def delivery_report(err, msg):
             f"Message delivered to {msg.topic()} [{msg.partition()}] offset {msg.offset()}"
         )
 
-
 def publish_price_event(event: dict):
     try:
         producer = get_kafka_producer()
         producer.produce(
             topic="price-events",
             key=event["symbol"],
-            value=str(event),
+            value=json.dumps(event).encode("utf-8"),  # ✅ Proper JSON string as bytes
             callback=delivery_report,
         )
         producer.flush()

@@ -53,9 +53,11 @@ services:
     volumes: [.:/app]
     depends_on:
       postgres:
-        condition: service_healthy    # wait until pg_isready passes
+        condition: service_healthy
       kafka:
         condition: service_healthy
+      topic-init:
+        condition: service_completed_successfully
     environment:
       DATABASE_URL: postgresql+asyncpg://postgres:postgres@postgres:5432/market_data
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
@@ -71,6 +73,28 @@ services:
     restart: always
     ports:
       - 8080:8080
+  topic-init:
+    image: confluentinc/cp-kafka:7.4.0
+    depends_on:
+      kafka:
+        condition: service_healthy
+    entrypoint: ["/bin/sh", "-c"]
+    command: >
+      "kafka-topics --create --if-not-exists --bootstrap-server kafka:9092 --replication-factor 1 --partitions 1 --topic price-events"
+  ma-consumer:
+    build: .
+    container_name: ma-consumer
+    command: ["python", "-m", "app.services.moving_average_consumer"]
+    depends_on:
+      kafka:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+      topic-init:
+        condition: service_completed_successfully
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@postgres:5432/market_data
 
 volumes:
   pgdata:
