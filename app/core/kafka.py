@@ -22,7 +22,7 @@ def delivery_report(err, msg):
 
 def publish_price_event(event: dict):
     try:
-        producer = get_kafka_producer()  # ⬅️ fetch dynamically
+        producer = get_kafka_producer()
         producer.produce(
             topic="price-events",
             key=event["symbol"],
