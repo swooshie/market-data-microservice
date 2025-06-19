@@ -1,1 +1,1 @@
-from .market import RawMarketData, PricePoint, MovingAverage, PollingJob
+from .market import MovingAverage, PollingJob, PricePoint, RawMarketData

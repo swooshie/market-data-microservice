@@ -1,16 +1,19 @@
 from fastapi import APIRouter, Depends, Query
+
 from ..core.dependencies import get_provider
-from ..services.provider import MarketDataProvider
+from ..schemas.poll import PollAcceptedResponse, PollRequest
 from ..schemas.price import PriceResponse
-from ..schemas.poll import PollRequest, PollAcceptedResponse
+from ..services.provider import MarketDataProvider
 
 router = APIRouter()
-from ..models.market import RawMarketData
-from ..core.database import get_session
-from sqlalchemy.ext.asyncio import AsyncSession
 import uuid
 
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from ..core.database import get_session
 from ..core.kafka import publish_price_event
+from ..models.market import RawMarketData
+
 
 @router.get("/prices/latest", response_model=PriceResponse)
 async def get_latest_price(
@@ -49,11 +52,12 @@ async def get_latest_price(
         provider=provider or market.__class__.__name__,
     )
 
+
 @router.post(
     "/prices/poll",
     status_code=202,
     response_model=PollAcceptedResponse,
-    summary="kick off background polling job"
+    summary="kick off background polling job",
 )
 async def poll_prices(
     req: PollRequest,
