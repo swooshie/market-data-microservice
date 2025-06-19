@@ -59,6 +59,7 @@ services:
     environment:
       DATABASE_URL: postgresql+asyncpg://postgres:postgres@postgres:5432/market_data
       KAFKA_BOOTSTRAP_SERVERS: kafka:9092
+      FINNHUB_API_KEY: d1a6alhr01qltimvfhq0d1a6alhr01qltimvfhqg
     command: >
       bash -c "
         python scripts/init_db.py &&      # migrate/prepare tables
