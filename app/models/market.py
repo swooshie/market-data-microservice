@@ -1,6 +1,9 @@
-from sqlalchemy import Column, Integer, String, Float, DateTime, JSON, Index, ForeignKey
+from sqlalchemy import (JSON, Column, DateTime, Float, ForeignKey, Index,
+                        Integer, String)
 from sqlalchemy.sql import func
+
 from .base import Base
+
 
 class RawMarketData(Base):
     __tablename__ = "raw_market_data"

@@ -6,3 +6,16 @@ pydantic
 pydantic-settings
 confluent-kafka
 httpx
+slowapi
+
+redis>=4.2.0
+
+# Testing dependencies
+pytest>=7.0.0
+pytest-asyncio>=0.20.0
+
+# Linting
+flake8>=6.0.0
+
+# Optional for pre-commit hooks
+pre-commit>=3.3.0

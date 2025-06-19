@@ -1,6 +1,8 @@
 # schemas/price.py
 from datetime import datetime
+
 from pydantic import BaseModel, Field
+
 
 class PriceResponse(BaseModel):
     symbol: str

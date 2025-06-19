@@ -1,12 +1,14 @@
 import asyncio
 import json
 import logging
-from confluent_kafka import Consumer, KafkaException
-from sqlalchemy.ext.asyncio import AsyncSession
-from app.core.database import async_session
-from app.models.market import PricePoint, MovingAverage
-from sqlalchemy import select, update
 from datetime import datetime
+
+from confluent_kafka import Consumer, KafkaException
+from sqlalchemy import select, update
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.core.database import async_session
+from app.models.market import MovingAverage, PricePoint
 
 KAFKA_BOOTSTRAP_SERVERS = "localhost:9092"
 TOPIC = "price-events"
@@ -16,6 +18,7 @@ consumer_conf = {
     "group.id": "ma-consumer-group",
     "auto.offset.reset": "earliest",
 }
+
 
 async def upsert_moving_average(session: AsyncSession, symbol: str, avg: float):
     stmt = select(MovingAverage).where(MovingAverage.symbol == symbol)
@@ -29,6 +32,7 @@ async def upsert_moving_average(session: AsyncSession, symbol: str, avg: float):
         session.add(ma)
     await session.commit()
 
+
 async def get_last_prices(session: AsyncSession, symbol: str, limit: int = 5):
     stmt = (
         select(PricePoint.price)
@@ -40,10 +44,12 @@ async def get_last_prices(session: AsyncSession, symbol: str, limit: int = 5):
     prices = [row[0] for row in result.fetchall()]
     return prices
 
+
 def calculate_moving_average(prices: list[float]) -> float:
     if not prices:
         return 0
     return sum(prices) / len(prices)
+
 
 async def process_message(msg, session: AsyncSession):
     try:
@@ -53,7 +59,9 @@ async def process_message(msg, session: AsyncSession):
         timestamp = datetime.fromisoformat(data["timestamp"])
 
         # Save PricePoint
-        pp = PricePoint(symbol=symbol, price=price, timestamp=timestamp, provider=data.get("source"))
+        pp = PricePoint(
+            symbol=symbol, price=price, timestamp=timestamp, provider=data.get("source")
+        )
         session.add(pp)
         await session.commit()
 
@@ -67,6 +75,7 @@ async def process_message(msg, session: AsyncSession):
 
     except Exception as e:
         logging.error(f"Error processing message: {e}")
+
 
 async def consume():
     consumer = Consumer(consumer_conf)
